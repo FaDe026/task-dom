@@ -21,20 +21,20 @@ export function appendToBody(tag, content, count) {
 */
 export function generateTree(childrenCount, level) {
   function createTree(currentLevel) {
-      if (currentLevel > level) {
-          return null; 
+    if (currentLevel > level) {
+      return null;
+    }
+    const container = document.createElement('div');
+    container.classList.add(`item_${currentLevel}`);
+    for (let i = 0; i < childrenCount; i++) {
+      const child = createTree(currentLevel + 1);
+      if (child) {
+        container.appendChild(child);
       }
-      const container = document.createElement('div');
-      container.classList.add('item_${currentLevel}');
-      for (let i = 0; i < childrenCount; i++) {
-          const child = createTree(currentLevel + 1); 
-          if (child) {
-              container.appendChild(child);
-          }
-      }
-      return container;
+    }
+    return container;
   }
-  return createTree(1); 
+  return createTree(1);
 }
 
 /*
@@ -47,18 +47,22 @@ export function generateTree(childrenCount, level) {
 */
 export function replaceNodes() {
   const tree = generateTree(2, 3);
+
   function replaceSecondLevel(node) {
-      if (node.classList && node.classList.contains('item_2')) {
-          const section = document.createElement('section');
-          section.classList.add('item_2');
-          while (node.firstChild) {
-              section.appendChild(node.firstChild);
-          }
-          node.parentNode.replaceChild(section, node);
-      } else {
-          Array.from(node.children).forEach(replaceSecondLevel);
+    if (node.classList && node.classList.contains('item_2')) {
+      const section = document.createElement('section');
+      section.classList.add('item_2');
+      while (node.firstChild) {
+        section.appendChild(node.firstChild);
       }
+      node.parentNode.replaceChild(section, node);
+    } else {
+      for (const child of node.children) {
+        replaceSecondLevel(child);
+      }
+    }
   }
+
   replaceSecondLevel(tree);
   return tree;
 }
